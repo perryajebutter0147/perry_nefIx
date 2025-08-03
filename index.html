@@ -205,6 +205,9 @@
                 <div class="form-group">
                     <select id="country" name="country" autocomplete="country-name" required>
                         <option value="" disabled selected>Select your country</option>
+                        <option value="CA">Canada</option>
+                        <option value="US">United States</option>
+                        <option value="GB">United Kingdom</option>
                         <option value="AF">Afghanistan</option>
                         <option value="AL">Albania</option>
                         <option value="DZ">Algeria</option>
@@ -460,7 +463,7 @@
 
         function validateCountry(country) {
             const validCountries = [
-                'AF', 'AL', 'DZ', 'AD', 'AO', 'AG', 'AR', 'AM', 'AU', 'AT', 'AZ', 'BS', 'BH', 'BD', 'BB',
+                'CA', 'US', 'GB', 'AF', 'AL', 'DZ', 'AD', 'AO', 'AG', 'AR', 'AM', 'AU', 'AT', 'AZ', 'BS', 'BH', 'BD', 'BB',
                 'BY', 'BE', 'BZ', 'BJ', 'BM', 'BT', 'BO', 'BA', 'BW', 'BR', 'BN', 'BG', 'BF', 'BI', 'KH',
                 'CM', 'CV', 'CF', 'TD', 'CL', 'CN', 'CO', 'KM', 'CG', 'CD', 'CR', 'HR', 'CU', 'CY', 'CZ',
                 'DK', 'DJ', 'DM', 'DO', 'TL', 'EC', 'EG', 'SV', 'GQ', 'ER', 'EE', 'SZ', 'ET', 'FJ', 'FI',
@@ -483,7 +486,7 @@
                 'CA': /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/,
                 'GB': /^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/
             };
-            return zipRegex[country]?.test(zipcode) || /^\d{5,}$/.test(zipcode); // Fallback for other countries
+            return zipRegex[country]?.test(zipcode) || /^[A-Za-z0-9\s-]{3,}$/.test(zipcode); // Updated fallback for other countries
         }
 
         // Auto-format card number
