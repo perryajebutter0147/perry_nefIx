@@ -21,9 +21,13 @@
             min-height: 100vh;
         }
 
-        .netflix-logo {
+        header {
             padding: 25px 45px;
-            position: relative;
+        }
+
+        .netflix-logo {
+            display: flex;
+            align-items: center;
         }
 
         .netflix-logo-text {
@@ -128,31 +132,19 @@
             display: none;
         }
 
-        .lang-switcher {
-            position: absolute;
-            top: 25px;
-            right: 45px;
-            background-color: #e50914;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 8px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
         [dir="rtl"] .text-left {
             text-align: right;
         }
 
         @media (max-width: 740px) {
+            header {
+                padding: 15px;
+            }
             .payment-container {
                 padding: 60px 5%;
             }
-            .lang-switcher {
-                top: 15px;
-                right: 15px;
+            .netflix-logo-text {
+                font-size: 30px;
             }
         }
 
@@ -167,11 +159,6 @@
         <div class="netflix-logo">
             <div class="netflix-logo-text">NETFLIX</div>
         </div>
-        <select class="lang-switcher">
-            <option value="en">English</option>
-            <option value="es">Español</option>
-            <option value="fr">Français</option>
-        </select>
     </header>
 
     <main>
